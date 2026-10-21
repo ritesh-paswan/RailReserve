@@ -1,0 +1,137 @@
+RAILRESERVE PROJECT PROGRESS REPORT
+==================================
+Report date: 21 October 2026
+
+PROJECT OVERVIEW
+----------------
+RailReserve is a native Android application built with Java, XML layouts,
+and SQLite. Live station and scheduled train search uses the Node.js backend
+as an adapter to the RailRadar provider. The app also contains a local demo
+booking workflow.
+
+Demo bookings are stored locally on the device. They are not IRCTC
+reservations, do not issue real railway tickets, and do not process payments.
+Live data is scheduled timetable information; live running status, fares,
+live seat availability, and real booking are not enabled.
+
+WORK COMPLETED
+--------------
+1. Tickets section
+   - The Tickets section now displays locally saved demo bookings directly.
+   - Ticket cards show booking details using the existing booking-card view:
+     PNR, train, route, journey time/date, passenger, coach/seat, fare, and
+     booking status.
+   - Tickets refresh when the section is displayed again, so bookings made
+     through the demo workflow can appear after returning.
+   - Existing "My demo bookings", PNR lookup, and cancellation workflows
+     remain available.
+   - Booking cards shown in the Tickets section do not expose the cancel
+     action; use My demo bookings to search and cancel.
+
+2. Station-search diagnosis
+   - The debug app had been built with an old laptop Wi-Fi address
+     (172.19.9.253). The laptop's later Wi-Fi address was 172.29.0.67.
+   - At the time of diagnosis, the backend was not listening on port 3000.
+   - The backend was started temporarily for verification. Its health
+     endpoint responded successfully, and station lookup for Delhi returned
+     station results. The temporary backend process was then stopped.
+   - A debug build was assembled with
+     http://172.29.0.67:3000 as its backend URL.
+   - Station search needs a reachable, running backend. On a physical phone,
+     type at least two characters and select a returned station suggestion
+     before searching trains.
+
+3. Build documentation
+   - README.md now describes project features and limitations; prerequisites;
+     debug APK build and output path; APK installation; backend setup; emulator
+     and physical-phone configuration; release APK build; tests; and common
+     troubleshooting steps.
+   - The README warns that 10.0.2.2 is for an Android emulator and that a
+     physical phone requires the computer's current reachable LAN address.
+
+4. Gradle Wrapper portability
+   - gradle/wrapper/gradle-wrapper.properties now points to the official
+     Gradle 9.5.0 distribution URL instead of a machine-specific local ZIP.
+   - The wrapper network timeout was increased to 60 seconds.
+
+BUILDING THE DEBUG APK
+----------------------
+From PowerShell at the project root:
+
+    .\gradlew.bat :app:assembleDebug
+
+The debug APK output is:
+
+    app\build\outputs\apk\debug\app-debug.apk
+
+The default debug backend address is http://10.0.2.2:3000, for an Android
+emulator talking to a backend on the development computer.
+
+For a physical phone, first get the computer's current Wi-Fi IPv4 address
+(for example, with ipconfig), then build using that address:
+
+    .\gradlew.bat :app:assembleDebug -PrailreserveDebugBackendUrl=http://192.168.1.20:3000
+
+Replace 192.168.1.20 with the actual address. Install the newly built APK;
+an existing installed APK keeps the address it was built with. Keep the
+backend running, and make sure Windows Firewall allows inbound TCP port 3000.
+The phone and computer must be able to communicate over the Wi-Fi network.
+
+To install with ADB:
+
+    adb install -r .\app\build\outputs\apk\debug\app-debug.apk
+
+See README.md for complete backend setup, release build, and troubleshooting
+instructions.
+
+BACKEND SETUP SUMMARY
+---------------------
+From PowerShell:
+
+    Set-Location .\backend
+    Copy-Item .env.example .env
+
+Set RAILRADAR_API_KEY in backend\.env using a text editor. Keep the key
+private; do not add it to the Android app or source control. Then run:
+
+    npm install
+    npm start
+
+Check backend process health:
+
+    curl.exe --noproxy "*" http://127.0.0.1:3000/health
+
+Check live station lookup:
+
+    curl.exe --noproxy "*" "http://127.0.0.1:3000/api/stations/search?q=Delhi"
+
+VERIFICATION
+------------
+- Android unit tests and debug APK assembly completed successfully using the
+  locally cached Gradle 9.5.0 distribution.
+- The backend health endpoint and Delhi station-search API were verified
+  successfully with the backend running.
+- Backend tests (19 passed) and backend syntax/lint checks passed earlier
+  during this work.
+- Direct installation or testing on a physical phone was not performed;
+  ADB was not available in the environment.
+- The Gradle Wrapper was changed to download Gradle from the official HTTPS
+  distribution URL. Attempts to download it in this environment timed out,
+  so a fresh download through the wrapper was not verified. The build passed
+  by invoking the already-cached Gradle 9.5.0 installation directly.
+
+REMAINING NOTES
+---------------
+- The backend must be running for live station/train searches.
+- The phone build's configured laptop address can become stale if the
+  computer reconnects to Wi-Fi and receives a different address. Rebuild with
+  the new address when that happens.
+- If the phone cannot open the backend health URL, check the current laptop
+  Wi-Fi IPv4 address, Windows Firewall inbound access to TCP port 3000, and
+  whether the Wi-Fi network isolates wireless clients.
+- README.md and gradle/wrapper/gradle-wrapper.properties have uncommitted
+  documentation/configuration edits, as do the Tickets-section source,
+  layout, and strings changes. These latest changes have not been committed
+  or pushed.
+- backend\.env and generated build outputs are local/private or generated
+  files and should not be committed.

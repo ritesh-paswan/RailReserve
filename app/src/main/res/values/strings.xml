@@ -19,6 +19,10 @@
     <string name="tickets_intro">Manage locally stored demonstration bookings or explore the demo reservation workflow.</string>
     <string name="tickets_demo_notice">DEMO ONLY - These are local demonstration records, not IRCTC reservations or real railway tickets.</string>
     <string name="tickets_my_bookings">My demo bookings</string>
+    <string name="tickets_your_bookings">Your booked tickets</string>
+    <string name="tickets_loading">Loading your demo tickets...</string>
+    <string name="tickets_booking_count">Showing %1$d booked tickets</string>
+    <string name="tickets_load_failed">Could not load your bookings. Please try again.</string>
     <string name="tickets_find_booking">Find demo booking by PNR</string>
     <string name="tickets_demo_flow">Explore demo booking workflow</string>
     <string name="profile_intro">Guest profile</string>
