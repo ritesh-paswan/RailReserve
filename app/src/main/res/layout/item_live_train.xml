@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Fare: Unavailable on the current API plan"
+        android:text="@string/fare_unavailable"
         android:textColor="@color/muted"
         android:textSize="12sp" />
 
@@ -88,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:text="Seat availability: Unavailable on the current API plan"
+        android:text="@string/availability_unavailable"
         android:textColor="@color/muted"
         android:textSize="12sp" />
 

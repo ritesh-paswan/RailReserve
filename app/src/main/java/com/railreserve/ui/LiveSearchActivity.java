@@ -7,10 +7,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -20,6 +24,7 @@ import com.railreserve.R;
 import com.railreserve.live.BackendException;
 import com.railreserve.live.LiveDataRepository;
 import com.railreserve.live.LiveStation;
+import com.railreserve.live.StationSuggestionMatcher;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +59,7 @@ public final class LiveSearchActivity extends AppCompatActivity {
 
         sourceInput = new StationInput(findViewById(R.id.liveSourceInput), findViewById(R.id.liveSourceStatus));
         destinationInput = new StationInput(findViewById(R.id.liveDestinationInput), findViewById(R.id.liveDestinationStatus));
+        AppNavigation.bind(this, "home");
         dateButton = findViewById(R.id.liveDateButton);
         searchButton = findViewById(R.id.liveSearchButton);
         if (state != null) restoreState(state);
@@ -136,13 +142,16 @@ public final class LiveSearchActivity extends AppCompatActivity {
 
     private void setupSelectionListener(StationInput input) {
         input.view.setOnItemClickListener((parent, view, position, id) -> {
-            Object item = parent.getItemAtPosition(position);
-            if (item instanceof LiveStation) {
-                input.generation++;
-                if (input.pending != null) handler.removeCallbacks(input.pending);
-                input.setSelected((LiveStation) item);
-                input.status.setText("Selected station code: " + input.selected.getCode());
+            LiveStation station = input.adapter.getItem(position);
+            if (station == null) {
+                setStatus(input, "That station suggestion is no longer available. Search again.", false);
+                return;
             }
+            input.generation++;
+            if (input.pending != null) handler.removeCallbacks(input.pending);
+            input.setSelected(station);
+            input.view.dismissDropDown();
+            input.status.setText("Selected station code: " + station.getCode());
         });
     }
 
@@ -172,7 +181,7 @@ public final class LiveSearchActivity extends AppCompatActivity {
     private final class StationInput {
         final AutoCompleteTextView view;
         final TextView status;
-        final ArrayAdapter<LiveStation> adapter;
+        final StationAdapter adapter;
         LiveStation selected;
         Runnable pending;
         int generation;
@@ -180,8 +189,7 @@ public final class LiveSearchActivity extends AppCompatActivity {
         StationInput(AutoCompleteTextView view, TextView status) {
             this.view = view;
             this.status = status;
-            adapter = new ArrayAdapter<>(LiveSearchActivity.this,
-                    android.R.layout.simple_dropdown_item_1line, new ArrayList<>());
+            adapter = new StationAdapter();
             view.setAdapter(adapter);
             view.setThreshold(2);
             status.setOnClickListener(ignored -> retryStationSearch(this));
@@ -196,20 +204,124 @@ public final class LiveSearchActivity extends AppCompatActivity {
         void setSelected(LiveStation station) {
             selected = station;
             if (station != null) view.setText(station.toString(), false);
-            else adapter.clear();
+            else adapter.clearStations();
+        }
+    }
+
+    private final class StationAdapter extends BaseAdapter implements Filterable {
+        private final LayoutInflater inflater = LayoutInflater.from(LiveSearchActivity.this);
+        private final ArrayList<LiveStation> stations = new ArrayList<>();
+        private final ArrayList<LiveStation> visibleStations = new ArrayList<>();
+        private final Filter stationFilter = new Filter() {
+            @Override protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint == null ? "" : constraint.toString();
+                ArrayList<LiveStation> matches = new ArrayList<>();
+                synchronized (stations) {
+                    for (LiveStation station : stations) {
+                        if (StationSuggestionMatcher.matches(station, query)) matches.add(station);
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = matches;
+                results.count = matches.size();
+                return results;
+            }
+
+            @Override protected void publishResults(CharSequence constraint, FilterResults results) {
+                ArrayList<LiveStation> matches = new ArrayList<>();
+                if (results.values instanceof ArrayList<?>) {
+                    for (Object item : (ArrayList<?>) results.values) {
+                        if (item instanceof LiveStation) matches.add((LiveStation) item);
+                    }
+                }
+                synchronized (visibleStations) {
+                    visibleStations.clear();
+                    visibleStations.addAll(matches);
+                }
+                notifyDataSetChanged();
+            }
+        };
+
+        @Override public int getCount() {
+            synchronized (visibleStations) {
+                return visibleStations.size();
+            }
+        }
+
+        @Override public LiveStation getItem(int position) {
+            synchronized (visibleStations) {
+                return position >= 0 && position < visibleStations.size()
+                        ? visibleStations.get(position)
+                        : null;
+            }
+        }
+
+        @Override public long getItemId(int position) {
+            return position;
+        }
+
+        @Override public View getView(int position, View convertView, ViewGroup parent) {
+            TextView row = convertView instanceof TextView
+                    ? (TextView) convertView
+                    : (TextView) inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            LiveStation station = getItem(position);
+            row.setText(station == null ? "" : station.getLabel());
+            return row;
+        }
+
+        @Override public Filter getFilter() {
+            return stationFilter;
+        }
+
+        LiveStation findByLabel(String text) {
+            synchronized (stations) {
+                for (LiveStation station : stations) {
+                    if (station.getLabel().equalsIgnoreCase(text.trim())) return station;
+                }
+            }
+            return null;
+        }
+
+        void setStations(java.util.List<LiveStation> results) {
+            synchronized (stations) {
+                stations.clear();
+                stations.addAll(results);
+            }
+            synchronized (visibleStations) {
+                visibleStations.clear();
+                visibleStations.addAll(results);
+            }
+            notifyDataSetChanged();
+        }
+
+        void clearStations() {
+            synchronized (stations) {
+                stations.clear();
+            }
+            synchronized (visibleStations) {
+                visibleStations.clear();
+            }
+            notifyDataSetChanged();
         }
     }
 
     private void onQueryChanged(StationInput input, String text) {
         if (input.selected != null && input.selected.toString().contentEquals(text)) return;
+        LiveStation exactMatch = input.adapter.findByLabel(text);
+        if (exactMatch != null) {
+            input.selected = exactMatch;
+            input.generation++;
+            if (input.pending != null) handler.removeCallbacks(input.pending);
+            input.status.setText("Selected station code: " + exactMatch.getCode());
+            return;
+        }
         input.selected = null;
         input.generation++;
         int requestGeneration = input.generation;
         if (input.pending != null) handler.removeCallbacks(input.pending);
-        input.adapter.clear();
+        input.adapter.clearStations();
         String query = text.trim();
         if (query.length() < 2) {
-            input.adapter.clear();
             setStatus(input, "Type at least 2 characters to search stations.", false);
             return;
         }
@@ -248,9 +360,8 @@ public final class LiveSearchActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (destroyed || input.generation != requestGeneration
                             || !input.view.getText().toString().trim().equals(query)) return;
-                    input.adapter.clear();
                     if (failure == null) {
-                        input.adapter.addAll(result);
+                        input.adapter.setStations(result);
                         setStatus(input, result.isEmpty()
                                 ? "No station matches. Check the name or code."
                                 : "Select a station name and code from the suggestions.", false);

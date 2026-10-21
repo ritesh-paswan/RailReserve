@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="COMPLETE YOUR JOURNEY"
+            android:text="DEMO BOOKING - PASSENGER DETAILS"
             android:textColor="@color/brand_dark"
             android:textSize="11sp"
             android:textStyle="bold"
@@ -223,7 +223,7 @@
             android:layout_marginTop="22dp"
             android:background="@drawable/button_primary"
             android:minHeight="48dp"
-            android:text="Confirm booking"
+            android:text="Create demo booking"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="16sp"

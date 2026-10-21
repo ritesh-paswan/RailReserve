@@ -12,24 +12,23 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.MyApplication"
+        android:usesCleartextTraffic="${usesCleartextTraffic}">
         <activity android:name=".ui.TrainResultsActivity" android:exported="false" />
-        <activity android:name=".ui.LiveSearchActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.LiveTrainResultsActivity" android:exported="false" />
-        <activity android:name=".ui.LiveScheduleActivity" android:exported="false" />
-        <activity android:name=".ui.BookingActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.MyBookingsActivity" android:exported="false" />
-        <activity android:name=".ui.FindBookingActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+        <activity android:name=".ui.LiveSearchActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.AppSectionActivity" android:exported="false" />
+        <activity android:name=".ui.LiveTrainResultsActivity" android:exported="false" />
+        <activity android:name=".ui.LiveScheduleActivity" android:exported="false" />
+        <activity android:name=".ui.BookingActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.MyBookingsActivity" android:exported="false" />
+        <activity android:name=".ui.FindBookingActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".MainActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

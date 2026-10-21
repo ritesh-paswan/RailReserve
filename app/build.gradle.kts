@@ -34,9 +34,11 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BACKEND_BASE_URL", buildConfigString(debugBackendUrl))
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         release {
             buildConfigField("String", "BACKEND_BASE_URL", buildConfigString(releaseBackendUrl))
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
             optimization {
                 enable = false
             }

@@ -149,7 +149,7 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingAdap
         emptySearchButton.setVisibility(View.GONE);
 
         if (allBookings.isEmpty()) {
-            showStatus("No reservations yet. Search for a train to plan your first journey.");
+            showStatus(getString(R.string.empty_demo_bookings));
             emptySearchButton.setVisibility(View.VISIBLE);
         } else if (visible.isEmpty()) {
             showStatus(emptyMessage(filter, query));

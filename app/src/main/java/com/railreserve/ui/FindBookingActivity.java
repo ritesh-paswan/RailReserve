@@ -116,7 +116,7 @@ public final class FindBookingActivity extends AppCompatActivity {
     }
 
     private void showBooking(Booking booking) {
-        resultPnr.setText("PNR  " + booking.getPnr());
+        resultPnr.setText("DEMO PNR  " + booking.getPnr());
         boolean cancelled = "CANCELLED".equalsIgnoreCase(booking.getStatus());
         resultStatus.setText(cancelled ? "CANCELLED" : booking.getStatus());
         resultStatus.setBackgroundResource(cancelled ? R.drawable.status_cancelled : R.drawable.status_confirmed);

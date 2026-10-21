@@ -1,179 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/liveSearchRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/surface_soft"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/chip_brand"
-            android:paddingStart="12dp"
-            android:paddingTop="7dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="7dp"
-            android:text="LIVE TRAIN DATA"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="Find trains by route"
-            android:textColor="@color/ink"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Station and timetable data from RailRadar via RailReserve backend. This mode does not book tickets."
-            android:textColor="@color/muted"
-            android:textSize="14sp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/card_background"
-            android:elevation="1dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="18dp">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="FROM STATION"
-                android:textColor="@color/ink"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <AutoCompleteTextView
-                android:id="@+id/liveSourceInput"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/input_background"
-                android:completionThreshold="2"
-                android:hint="Search by name or station code"
-                android:inputType="textCapWords"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:singleLine="true"
-                android:textColor="@color/ink"
-                android:textColorHint="@color/muted"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/liveSourceStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:minHeight="20dp"
-                android:text="Type at least 2 characters to search stations."
-                android:textColor="@color/muted"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/liveSwapButton"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="3dp"
-                android:backgroundTint="@color/teal_soft"
-                android:minWidth="0dp"
-                android:text="Swap stations"
-                android:textAllCaps="false"
-                android:textColor="@color/brand_dark" />
-
-            <TextView
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TO STATION"
-                android:textColor="@color/ink"
-                android:textSize="12sp"
+                android:background="@drawable/chip_brand"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="7dp"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
-            <AutoCompleteTextView
-                android:id="@+id/liveDestinationInput"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/input_background"
-                android:completionThreshold="2"
-                android:hint="Search by name or station code"
-                android:inputType="textCapWords"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:singleLine="true"
-                android:textColor="@color/ink"
-                android:textColorHint="@color/muted"
-                android:textSize="15sp" />
-
             <TextView
-                android:id="@+id/liveDestinationStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:minHeight="20dp"
-                android:text="Type at least 2 characters to search stations."
+                android:layout_marginTop="14dp"
+                android:text="@string/live_home_title"
+                android:textColor="@color/ink"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/live_home_subtitle"
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/card_background"
+                android:elevation="1dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/station_source_label"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/liveSourceInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/input_background"
+                    android:completionThreshold="2"
+                    android:hint="@string/station_search_hint"
+                    android:inputType="textCapWords"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:singleLine="true"
+                    android:textColor="@color/ink"
+                    android:textColorHint="@color/muted"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/liveSourceStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:minHeight="20dp"
+                    android:text="@string/station_search_minimum"
+                    android:textColor="@color/muted"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/liveSwapButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="3dp"
+                    android:backgroundTint="@color/teal_soft"
+                    android:minWidth="0dp"
+                    android:text="Swap stations"
+                    android:textAllCaps="false"
+                    android:textColor="@color/brand_dark" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/station_destination_label"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/liveDestinationInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/input_background"
+                    android:completionThreshold="2"
+                    android:hint="@string/station_search_hint"
+                    android:inputType="textCapWords"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:singleLine="true"
+                    android:textColor="@color/ink"
+                    android:textColorHint="@color/muted"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/liveDestinationStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:minHeight="20dp"
+                    android:text="@string/station_search_minimum"
+                    android:textColor="@color/muted"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/journey_date_label"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/liveDateButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/field_button_background"
+                    android:gravity="center_vertical|start"
+                    android:minHeight="48dp"
+                    android:paddingStart="14dp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/liveSearchButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/button_primary"
+                    android:minHeight="48dp"
+                    android:text="@string/live_search_button"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/card_background"
+                android:padding="14dp"
+                android:text="@string/live_mode_notice"
                 android:textColor="@color/muted"
                 android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="JOURNEY DATE"
-                android:textColor="@color/ink"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/liveDateButton"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/field_button_background"
-                android:gravity="center_vertical|start"
-                android:minHeight="48dp"
-                android:paddingStart="14dp"
-                android:textAllCaps="false"
-                android:textColor="@color/ink"
-                android:textSize="15sp" />
-
-            <Button
-                android:id="@+id/liveSearchButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/button_primary"
-                android:minHeight="48dp"
-                android:text="Search live trains"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
         </LinearLayout>
+    </ScrollView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:gravity="center"
-            android:text="Live mode has no fare, seat availability, or real ticket booking."
-            android:textColor="@color/muted"
-            android:textSize="12sp" />
-    </LinearLayout>
-</ScrollView>
+    <include layout="@layout/view_bottom_navigation" />
+</LinearLayout>

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -41,7 +42,9 @@ public final class BackendApiClient {
         HttpURLConnection connection = null;
         try {
             URL url = new URL(baseUrl + path);
-            connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) (isLoopbackHost(url.getHost())
+                    ? url.openConnection(Proxy.NO_PROXY)
+                    : url.openConnection());
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
             connection.setReadTimeout(READ_TIMEOUT_MS);
@@ -93,5 +96,10 @@ public final class BackendApiClient {
         if (status == 429) return "Request limit reached. Please try again later.";
         if (status >= 500) return "Train-data service is temporarily unavailable. Please try again later.";
         return "Train-data service returned an unexpected response.";
+    }
+
+    private boolean isLoopbackHost(String host) {
+        return "localhost".equalsIgnoreCase(host) || "127.0.0.1".equals(host)
+                || "::1".equals(host) || "[::1]".equals(host);
     }
 }

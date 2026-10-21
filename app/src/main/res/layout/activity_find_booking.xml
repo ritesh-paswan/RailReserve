@@ -21,7 +21,7 @@
             android:layout_height="48dp"
             android:backgroundTint="@android:color/transparent"
             android:minWidth="48dp"
-            android:text="‹  Home"
+            android:text="‹  Tickets"
             android:textAllCaps="false"
             android:textColor="@color/brand_dark"
             android:textSize="15sp" />
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Enter the demo PNR from your booking confirmation."
+                android:text="@string/demo_pnr_lookup_note"
                 android:textColor="#D9E3F0"
                 android:textSize="14sp" />
         </LinearLayout>

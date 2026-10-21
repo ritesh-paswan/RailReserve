@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">RailReserve</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_tickets">Tickets</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_about">About</string>
+    <string name="live_home_title">Find trains by route</string>
+    <string name="live_home_subtitle">Search station and timetable data from RailRadar through the RailReserve backend.</string>
+    <string name="live_mode_notice">Live search uses RailRadar timetable data. Fare and live seat availability are not enabled in this app. Real ticket booking is not available.</string>
+    <string name="station_source_label">FROM STATION</string>
+    <string name="station_destination_label">TO STATION</string>
+    <string name="station_search_hint">Search by station name or code</string>
+    <string name="station_search_minimum">Type at least 2 characters to search stations.</string>
+    <string name="journey_date_label">JOURNEY DATE</string>
+    <string name="live_search_button">Search trains</string>
+    <string name="app_section_tickets">Tickets</string>
+    <string name="app_section_profile">Profile</string>
+    <string name="app_section_about">About RailReserve</string>
+    <string name="tickets_intro">Manage locally stored demonstration bookings or explore the demo reservation workflow.</string>
+    <string name="tickets_demo_notice">DEMO ONLY - These are local demonstration records, not IRCTC reservations or real railway tickets.</string>
+    <string name="tickets_my_bookings">My demo bookings</string>
+    <string name="tickets_find_booking">Find demo booking by PNR</string>
+    <string name="tickets_demo_flow">Explore demo booking workflow</string>
+    <string name="profile_intro">Guest profile</string>
+    <string name="profile_details">This app has no account or sign-in system. Passenger details exist only in local demo booking records on this device; the app does not maintain a separate profile.</string>
+    <string name="about_intro">Train search and reservation-workflow demonstration</string>
+    <string name="about_details">Technology: Java, XML Android Views, SQLite, and the existing Node.js backend.\n\nLive data: station search and scheduled timetable information provided by RailRadar through the RailReserve backend.\n\nDemo features: local sample train search, reservations, PNR lookup, and cancellation.\n\nLimitations: fare information and live seat availability are not enabled in this app. The app does not issue real railway tickets, process payments, or provide live running status.</string>
+    <string name="demo_label">DEMO ONLY</string>
+    <string name="demo_booking_description">This is a local demonstration booking. It is not an IRCTC reservation or a real ticket.</string>
+    <string name="my_demo_bookings_title">My demo bookings</string>
+    <string name="my_demo_bookings_description">View and manage locally stored demonstration reservations.</string>
+    <string name="empty_demo_bookings">No demo bookings yet. Use the demo booking workflow to explore a reservation.</string>
+    <string name="return_to_tickets">Back to Tickets</string>
+    <string name="demo_pnr_lookup_note">Enter the demo PNR from a local RailReserve booking. It is not a railway-issued PNR.</string>
+    <string name="fare_unavailable">Fare information unavailable on the current API plan.</string>
+    <string name="availability_unavailable">Live seat availability unavailable on the current API plan.</string>
 </resources>

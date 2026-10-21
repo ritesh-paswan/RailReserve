@@ -23,15 +23,15 @@ Replace `192.168.1.20` with the development computer's current LAN address. For 
 .\gradlew.bat :app:assembleRelease -PrailreserveBackendUrl=https://your-service.example.com
 ```
 
-You can place either non-secret property in the user's Gradle properties file to avoid supplying it each build. Do not store `RAILRADAR_API_KEY` in Gradle or the app; it remains in the backend host's private environment settings.
+The backend uses the RailRadar API. Set `RAILRADAR_API_KEY` and `RAILRADAR_BASE_URL=https://api.railradar.in/v1` in the backend's private `.env`/host configuration. Never put the provider key in Gradle or the Android app.
 
 ## Manual live-mode check
 
 1. Configure the backend's private `RAILRADAR_API_KEY` and start it from `backend/` with `npm start`.
 2. Build/install the debug app with the emulator URL, a reachable computer LAN URL, or the deployed HTTPS URL above.
-3. Open **Search live train data** from the home screen. Search a station name/code, wait for suggestions, and select the displayed name/code for both route ends.
+3. The app opens on Live Home. Search a station name/code, wait for suggestions, and select the displayed name/code for both route ends.
 4. Choose a journey date and press **Search live trains**. Confirm the screen identifies live scheduled data and shows only returned fields, including day offsets when supplied.
-5. Open a train and confirm its ordered scheduled stops, null endpoint times, and day offsets. Fare and seat availability must both state that they are unavailable on the current API plan.
+5. Open a train and confirm its ordered scheduled stops, null endpoint times, and day offsets. Fare and live seat availability are not enabled in this app.
 6. Stop the backend or disconnect the device. Confirm live search/schedule shows an error and never substitutes demo trains.
 7. Return to the home screen's **Demo Booking** search. Exercise a demo booking, confirmation, PNR lookup, cancellation, and My Bookings to verify the local workflow remains available.
 

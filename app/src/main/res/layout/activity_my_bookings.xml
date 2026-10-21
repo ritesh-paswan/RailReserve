@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="RAILRESERVE  /  TRAVEL RECORDS"
+            android:text="RAILRESERVE  /  DEMO TICKETS"
             android:textColor="#C3D9E6"
             android:textSize="10sp"
             android:textStyle="bold"
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="My bookings"
+            android:text="@string/my_demo_bookings_title"
             android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:text="View your tickets and manage active reservations."
+            android:text="@string/my_demo_bookings_description"
             android:textColor="#D9E3F0"
             android:textSize="13sp" />
     </LinearLayout>
@@ -151,7 +151,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/button_primary"
         android:minHeight="48dp"
-        android:text="Search trains"
+        android:text="@string/return_to_tickets"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textStyle="bold"
