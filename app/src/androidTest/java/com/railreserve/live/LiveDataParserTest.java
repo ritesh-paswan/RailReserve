@@ -21,6 +21,20 @@ public class LiveDataParserTest {
         assertEquals(0, LiveDataParser.parseStations(new JSONObject("{\"stations\":[]}")).size());
     }
 
+    @Test public void parsesBackendStationSearchSuccessEnvelopeAndEmptyResults() throws Exception {
+        JSONObject response = new JSONObject("{\"success\":true,\"data\":{\"stations\":["
+                + "{\"code\":\"NDLS\",\"name\":\"New Delhi\",\"city\":\"Delhi\"}]},"
+                + "\"meta\":{\"requestId\":\"test-request\"}}");
+        List<LiveStation> stations = LiveDataParser.parseStations(LiveDataParser.successData(response.toString()));
+        assertEquals(1, stations.size());
+        assertEquals("NDLS", stations.get(0).getCode());
+        assertEquals("New Delhi", stations.get(0).getName());
+
+        JSONObject emptyResponse = new JSONObject("{\"success\":true,\"data\":{\"stations\":[]},"
+                + "\"meta\":{\"requestId\":\"test-request\"}}");
+        assertEquals(0, LiveDataParser.parseStations(LiveDataParser.successData(emptyResponse.toString())).size());
+    }
+
     @Test public void rejectsMalformedStationEnvelopeAndRows() throws Exception {
         assertThrows(BackendException.class,
                 () -> LiveDataParser.parseStations(new JSONObject("{\"results\":[]}")));

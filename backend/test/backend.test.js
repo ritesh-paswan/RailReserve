@@ -44,6 +44,17 @@ test('valid station request normalizes provider result and preserves empty resul
   assert.throws(() => normalizeStations(undefined), (error) => error.code === 'INVALID_PROVIDER_RESPONSE');
 });
 
+test('station search returns the documented success envelope for an empty provider result', async () => {
+  await withServer(createApp({ client: fakeClient(async () => []), rateLimitMax: 100 }), async (base) => {
+    const response = await fetch(`${base}/api/stations/search?q=NoMatches`);
+    const body = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(body.success, true);
+    assert.deepEqual(body.data.stations, []);
+    assert.equal(typeof body.meta.requestId, 'string');
+  });
+});
+
 test('validates malformed input before provider call', async () => {
   let calls = 0;
   await withServer(createApp({ client: fakeClient(async () => { calls += 1; }), rateLimitMax: 100 }), async (base) => {
