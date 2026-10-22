@@ -4,37 +4,89 @@
     android:layout_height="match_parent"
     android:background="@color/surface_soft"
     android:orientation="vertical"
-    android:padding="18dp">
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="10dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/chip_brand"
-        android:paddingStart="10dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="6dp"
-        android:text="LIVE TRAIN DATA"
-        android:textColor="@color/white"
-        android:textSize="11sp"
-        android:textStyle="bold" />
+        android:background="@drawable/live_hero_background"
+        android:orientation="vertical"
+        android:padding="18dp">
 
-    <TextView
-        android:id="@+id/liveResultsHeading"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chip_brand"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="6dp"
+            android:text="LIVE TRAIN RESULTS"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/liveResultsHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/liveResultsSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#DDE9EE"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:textColor="@color/ink"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:background="@drawable/live_search_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Class"
+            android:textColor="@color/ink"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="14dp" />
+
+        <Spinner
+            android:id="@+id/liveAvailabilityClass"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:paddingEnd="14dp"
+            android:text="Select on a train"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/liveResultsSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="@color/muted"
-        android:textSize="13sp" />
+        android:layout_marginTop="6dp"
+        android:text="Fare estimates and seat checks are on demand. Seat availability uses General quota and may use provider credits."
+        android:textColor="@color/brand_dark"
+        android:textSize="12sp" />
 
     <ProgressBar
         android:id="@+id/liveResultsProgress"
@@ -48,7 +100,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="@drawable/card_background"
+        android:background="@drawable/live_search_card"
         android:gravity="center"
         android:minHeight="110dp"
         android:padding="20dp"
@@ -60,7 +112,7 @@
         android:id="@+id/liveResultsRetry"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/button_secondary"
         android:minHeight="48dp"
         android:text="Retry search"
@@ -78,12 +130,4 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="12dp"
         android:paddingBottom="12dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/fare_unavailable"
-        android:textColor="@color/muted"
-        android:textSize="12sp" />
 </LinearLayout>

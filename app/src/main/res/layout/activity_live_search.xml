@@ -21,64 +21,81 @@
             android:paddingEnd="20dp"
             android:paddingBottom="18dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/chip_brand"
-                android:paddingStart="12dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="7dp"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="@string/live_home_title"
-                android:textColor="@color/ink"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+                android:background="@drawable/live_hero_background"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/live_home_subtitle"
-                android:textColor="@color/muted"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_brand"
+                    android:paddingStart="12dp"
+                    android:paddingTop="7dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="7dp"
+                    android:text="RAILRESERVE  /  LIVE"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/live_home_title"
+                    android:textColor="@color/white"
+                    android:textSize="27sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Plan your journey with live station and train information."
+                    android:textColor="#DDE9EE"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/card_background"
-                android:elevation="1dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/live_search_card"
+                android:elevation="3dp"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="YOUR JOURNEY"
+                    android:textColor="@color/brand_dark"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/station_source_label"
-                    android:textColor="@color/ink"
+                    android:textColor="@color/muted"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <AutoCompleteTextView
                     android:id="@+id/liveSourceInput"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="58dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/input_background"
                     android:completionThreshold="2"
                     android:hint="@string/station_search_hint"
                     android:inputType="textCapWords"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:singleLine="true"
                     android:textColor="@color/ink"
                     android:textColorHint="@color/muted"
@@ -97,34 +114,35 @@
                 <Button
                     android:id="@+id/liveSwapButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="end"
                     android:layout_marginTop="3dp"
-                    android:backgroundTint="@color/teal_soft"
+                    android:background="@drawable/live_route_badge"
                     android:minWidth="0dp"
                     android:text="Swap stations"
                     android:textAllCaps="false"
-                    android:textColor="@color/brand_dark" />
+                    android:textColor="@color/brand_dark"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/station_destination_label"
-                    android:textColor="@color/ink"
+                    android:textColor="@color/muted"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <AutoCompleteTextView
                     android:id="@+id/liveDestinationInput"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="58dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/input_background"
                     android:completionThreshold="2"
                     android:hint="@string/station_search_hint"
                     android:inputType="textCapWords"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:singleLine="true"
                     android:textColor="@color/ink"
                     android:textColorHint="@color/muted"
@@ -146,27 +164,28 @@
                     android:layout_marginTop="12dp"
                     android:text="@string/journey_date_label"
                     android:textColor="@color/ink"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/liveDateButton"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="56dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/field_button_background"
                     android:gravity="center_vertical|start"
                     android:minHeight="48dp"
-                    android:paddingStart="14dp"
+                    android:paddingStart="16dp"
                     android:textAllCaps="false"
                     android:textColor="@color/ink"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/liveSearchButton"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_height="58dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/button_primary"
                     android:minHeight="48dp"
                     android:text="@string/live_search_button"
@@ -180,10 +199,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:background="@drawable/card_background"
+                android:background="@drawable/live_route_badge"
                 android:padding="14dp"
                 android:text="@string/live_mode_notice"
-                android:textColor="@color/muted"
+                android:textColor="@color/brand_dark"
                 android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>

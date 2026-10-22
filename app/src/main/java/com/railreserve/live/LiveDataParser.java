@@ -74,6 +74,27 @@ public final class LiveDataParser {
                 optionalStrings(train.optJSONArray("runDays")), stops);
     }
 
+    public static LiveAvailability parseAvailability(JSONObject data) throws BackendException {
+        String status = requiredString(data, "availabilityStatus");
+        String statusType = requiredString(data, "statusType");
+        if (status == null || statusType == null) {
+            throw malformed("Seat availability response was incomplete.");
+        }
+        return new LiveAvailability(status, statusType, optionalString(data, "availabilityDate"));
+    }
+
+    public static LiveFare parseFare(JSONObject data) throws BackendException {
+        if (data == null || !(data.opt("fareKnown") instanceof Boolean)) {
+            throw malformed("Fare response was incomplete.");
+        }
+        boolean known = data.optBoolean("fareKnown");
+        Double total = optionalDouble(data, "totalFare");
+        if (known && (total == null || total < 0)) {
+            throw malformed("Fare response did not include a valid total.");
+        }
+        return new LiveFare(known, total);
+    }
+
     public static JSONObject successData(String body) throws BackendException {
         try {
             JSONObject envelope = new JSONObject(body);
@@ -92,8 +113,7 @@ public final class LiveDataParser {
 
     private static LiveStation parseStation(JSONObject value) {
         String code = requiredString(value, "code");
-        String name = requiredString(value, "name");
-        return code == null || name == null ? null : new LiveStation(code, name, optionalString(value, "city"));
+        return code == null ? null : new LiveStation(code, optionalString(value, "name"), optionalString(value, "city"));
     }
 
     private static String requiredString(JSONObject value, String key) {
@@ -143,6 +163,9 @@ public final class LiveDataParser {
     public static String userMessage(String code) {
         if ("PROVIDER_NOT_CONFIGURED".equals(code)) return "Train-data service is not configured. Try again later.";
         if ("PROVIDER_AUTH_ERROR".equals(code)) return "The provider rejected this request. Please try again later.";
+        if ("PROVIDER_ACCESS_DENIED".equals(code)) return "The provider key does not have access to this service. Check its scopes and plan.";
+        if ("PROVIDER_CREDITS_EXHAUSTED".equals(code)) return "The provider account has insufficient credits. Try again later.";
+        if ("PROVIDER_VERSION_UNAVAILABLE".equals(code)) return "The provider API version is unavailable. Contact support.";
         if ("PROVIDER_RATE_LIMITED".equals(code) || "RATE_LIMITED".equals(code)) return "Request limit reached. Please try again later.";
         if ("PROVIDER_NOT_FOUND".equals(code)) return "No train data was found for this request.";
         if ("PROVIDER_TIMEOUT".equals(code)) return "Train-data service timed out. Check your connection and retry.";

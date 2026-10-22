@@ -1,13 +1,13 @@
 import { ProviderError, mapProviderStatus } from '../errors.js';
 
-export const DEFAULT_BASE_URL = 'https://api.railradar.in/v1';
+export const DEFAULT_BASE_URL = 'https://ir.railcore.tech/v1';
 
-export class RailRadarClient {
-  constructor({ apiKey = process.env.RAILRADAR_API_KEY, baseUrl = process.env.RAILRADAR_BASE_URL || DEFAULT_BASE_URL,
-    timeoutMs = Number(process.env.REQUEST_TIMEOUT_MS || 8000), fetchImpl = globalThis.fetch } = {}) {
+export class RailCoreClient {
+  constructor({ apiKey = process.env.RAILCORE_API_KEY, baseUrl = process.env.RAILCORE_BASE_URL || DEFAULT_BASE_URL,
+    timeoutMs = Number(process.env.REQUEST_TIMEOUT_MS || 20000), fetchImpl = globalThis.fetch } = {}) {
     this.apiKey = apiKey;
     this.baseUrl = validateBaseUrl(baseUrl);
-    this.timeoutMs = Number.isInteger(timeoutMs) && timeoutMs >= 500 && timeoutMs <= 30000 ? timeoutMs : 8000;
+    this.timeoutMs = Number.isInteger(timeoutMs) && timeoutMs >= 500 && timeoutMs <= 30000 ? timeoutMs : 20000;
     this.fetchImpl = fetchImpl;
   }
 
@@ -23,13 +23,17 @@ export class RailRadarClient {
     try {
       response = await this.fetchImpl(url, {
         method: 'GET',
-        headers: { Accept: 'application/json', Authorization: `Bearer ${this.apiKey}` },
+        headers: { Accept: 'application/json', 'X-RailCore-Key': this.apiKey },
         signal: AbortSignal.timeout(this.timeoutMs),
       });
     } catch (error) {
       if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
         throw new ProviderError(504, 'PROVIDER_TIMEOUT', 'The train data provider did not respond in time.');
       }
+      const causeCode = typeof error?.cause?.code === 'string' && /^[A-Z0-9_]+$/.test(error.cause.code)
+        ? error.cause.code
+        : 'UNKNOWN';
+      process.stderr.write(`RailCore network request failed (${error?.name || 'Error'}; ${causeCode}).\n`);
       throw new ProviderError(502, 'PROVIDER_UNAVAILABLE', 'The train data provider could not be reached.');
     }
     if (!response.ok) throw mapProviderStatus(response.status);
@@ -50,10 +54,10 @@ export class RailRadarClient {
 function validateBaseUrl(value) {
   let parsed;
   try { parsed = new URL(value); } catch {
-    throw new Error('RAILRADAR_BASE_URL must be a valid HTTPS URL.');
+    throw new Error('RAILCORE_BASE_URL must be a valid HTTPS URL.');
   }
   if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.search || parsed.hash) {
-    throw new Error('RAILRADAR_BASE_URL must be HTTPS and must not contain credentials, query, or fragment.');
+    throw new Error('RAILCORE_BASE_URL must be HTTPS and must not contain credentials, query, or fragment.');
   }
   return parsed.toString().replace(/\/$/, '');
 }

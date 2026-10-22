@@ -16,63 +16,55 @@ function boolean(value) {
   return typeof value === 'boolean' ? value : null;
 }
 
-function station(value) {
-  if (typeof value === 'string') return { code: text(value), name: null };
-  const item = object(value);
-  return { code: text(item.code), name: text(item.name) };
-}
-
 export function normalizeStations(data) {
-  if (!Array.isArray(data)) throw invalidProviderData('Station search did not return a station list.');
-  if (data.some((entry) => !entry || typeof entry !== 'object' || Array.isArray(entry)
-    || typeof entry.code !== 'string' || typeof entry.name !== 'string')) {
+  const results = object(data).results;
+  if (!Array.isArray(results)) throw invalidProviderData('Station search did not return a station list.');
+  if (results.some((entry) => !entry || typeof entry !== 'object' || Array.isArray(entry)
+    || typeof entry.station_code !== 'string' || typeof entry.station_name !== 'string')) {
     throw invalidProviderData('Station search returned a malformed station.');
   }
-  return data.map((entry) => {
+  return results.map((entry) => {
     const item = object(entry);
-    return { code: text(item.code), name: text(item.name), city: text(item.city) };
+    return { code: text(item.station_code), name: text(item.display_name) || text(item.station_name), city: text(item.city) };
   });
 }
 
-export function normalizeBetween(data) {
+export function normalizeBetween(data, requestedRoute) {
   const item = object(data);
-  if (!isNamedStation(item.from) || !isNamedStation(item.to) || !Number.isFinite(item.count) || !Array.isArray(item.trains)) {
+  if (typeof item.from_station_code !== 'string' || typeof item.to_station_code !== 'string'
+    || (requestedRoute && (item.from_station_code !== requestedRoute.from || item.to_station_code !== requestedRoute.to))
+    || !Array.isArray(item.trains)
+    || item.trains.some((entry) => !entry || typeof entry !== 'object' || Array.isArray(entry)
+      || typeof entry.train_number !== 'string' || typeof entry.train_name !== 'string'
+      || typeof entry.departure_time !== 'string' || typeof entry.arrival_time !== 'string'
+      || !Number.isFinite(entry.duration_minutes))) {
     throw invalidProviderData('Train search returned an incomplete result.');
   }
-  if (item.trains.some((entry) => {
-    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return true;
-    const train = object(entry.train);
-    const from = object(entry.from);
-    const to = object(entry.to);
-    return typeof train.number !== 'string' || typeof train.name !== 'string'
-      || typeof from.departure !== 'string' || !Number.isFinite(from.day) || !Number.isFinite(from.sequence)
-      || typeof to.arrival !== 'string' || !Number.isFinite(to.day) || !Number.isFinite(to.sequence);
-  })) throw invalidProviderData('Train search returned a malformed train.');
-  const trains = item.trains;
+  const from = item.from_station_code;
+  const to = item.to_station_code;
   return {
-    from: station(item.from),
-    to: station(item.to),
-    count: number(item.count),
-    trains: trains.map((entry) => {
-      const train = object(entry);
-      const from = object(train.from);
-      const to = object(train.to);
+    from: { code: from, name: null },
+    to: { code: to, name: null },
+    count: item.trains.length,
+    trains: item.trains.map((entry) => {
+      const departureDay = dayOffset(entry.departure_time, 0);
+      const arrivalDay = dayOffset(entry.departure_time, entry.duration_minutes);
       return {
-        number: text(object(train.train).number),
-        name: text(object(train.train).name),
-        type: text(object(train.train).type),
-        runDays: Array.isArray(object(train.train).runDays) ? object(train.train).runDays : null,
+        number: text(entry.train_number),
+        name: text(entry.train_name),
+        type: text(entry.train_type),
+        runDays: Array.isArray(entry.running_days) ? entry.running_days : null,
         from: {
-          station: station(item.from), departure: text(from.departure),
-          day: number(from.day), sequence: number(from.sequence),
+          station: { code: from, name: null }, departure: text(entry.departure_time),
+          day: departureDay, sequence: null,
         },
         to: {
-          station: station(item.to), arrival: text(to.arrival),
-          day: number(to.day), sequence: number(to.sequence),
+          station: { code: to, name: null }, arrival: text(entry.arrival_time),
+          day: arrivalDay, sequence: null,
         },
-        distanceKm: number(train.distance),
-        durationMinutes: number(train.duration),
-        totalHaltsBetween: number(train.totalHaltsBetween),
+        distanceKm: number(entry.distance_km),
+        durationMinutes: number(entry.duration_minutes),
+        totalHaltsBetween: null,
       };
     }),
   };
@@ -80,28 +72,30 @@ export function normalizeBetween(data) {
 
 export function normalizeSchedule(data) {
   const item = object(data);
-  const train = object(item.train);
-  if (typeof train.number !== 'string' || typeof train.name !== 'string' || !Array.isArray(item.route)
-    || item.route.some((stop) => !stop || typeof stop !== 'object' || Array.isArray(stop)
-      || !Number.isFinite(stop.sequence) || !isNamedStation(stop.station))) {
+  if (typeof item.train_number !== 'string' || typeof item.train_name !== 'string' || !Array.isArray(item.stops)
+    || item.stops.some((stop) => !stop || typeof stop !== 'object' || Array.isArray(stop)
+      || !Number.isFinite(stop.sequence) || typeof stop.station_code !== 'string' || typeof stop.station_name !== 'string')) {
     throw invalidProviderData('Train schedule returned an incomplete route.');
   }
-  const route = item.route;
+  const route = item.stops;
   return {
     train: {
-      number: text(train.number), name: text(train.name), type: text(train.type), category: text(train.category),
-      source: station(train.source), destination: station(train.destination),
-      runDays: Array.isArray(train.runDays) ? train.runDays : null,
-      distanceKm: number(train.distance), durationMinutes: number(train.duration),
-      totalHalts: number(train.totalHalts),
+      number: text(item.train_number), name: text(item.train_name), type: null, category: null,
+      source: { code: text(item.source_station_code), name: null },
+      destination: { code: text(item.destination_station_code), name: null },
+      runDays: Array.isArray(item.running_days) ? item.running_days : null,
+      distanceKm: number(item.distance_km), durationMinutes: number(item.total_duration_minutes),
+      totalHalts: route.filter((stop) => stop.is_stop === true).length,
     },
     stops: route.map((entry) => {
       const stop = object(entry);
       return {
-        sequence: number(stop.sequence), station: station(stop.station),
-        arrival: text(stop.arrival), departure: text(stop.departure),
-        arrivalDay: number(stop.arrivalDay), departureDay: number(stop.departureDay),
-        distanceKm: number(stop.distance), isHalt: boolean(stop.isHalt), platform: text(stop.platform),
+        sequence: number(stop.sequence),
+        station: { code: text(stop.station_code), name: text(stop.station_name), city: null },
+        arrival: text(stop.arrival_time), departure: text(stop.departure_time),
+        arrivalDay: stop.arrival_time ? dayOffset(stop.arrival_time, 0, stop.day) : null,
+        departureDay: stop.departure_time ? dayOffset(stop.departure_time, 0, stop.day) : null,
+        distanceKm: number(stop.distance_km), isHalt: boolean(stop.is_stop), platform: text(stop.platform_number),
       };
     }),
   };
@@ -109,15 +103,17 @@ export function normalizeSchedule(data) {
 
 const FARE_FIELDS = ['baseFare', 'reservationCharge', 'superfastCharge', 'otherCharge', 'tatkalFare', 'goodsServiceTax', 'cateringCharge', 'dynamicFare'];
 
-export function normalizeFare(data) {
+export function normalizeFare(data, requested) {
   const item = object(data);
-  const providerBreakdown = object(item.breakdown);
-  const breakdown = Object.fromEntries(FARE_FIELDS.map((key) => [key, number(providerBreakdown[key])]));
-  const totalFare = number(item.totalFare);
+  const fares = Array.isArray(item.fares) ? item.fares : [];
+  const fare = fares.find((entry) => object(entry).class_code === requested.classCode);
+  const breakdown = Object.fromEntries(FARE_FIELDS.map((key) => [key, null]));
+  const totalFare = number(object(fare).fare);
   return {
-    trainNumber: text(item.trainNumber), trainName: text(item.trainName),
-    source: station(item.sourceStation), destination: station(item.destinationStation),
-    classCode: text(item.classCode), quotaCode: text(item.quotaCode),
+    trainNumber: text(item.train_number) || requested.number, trainName: null,
+    source: { code: text(item.from_station_code) || requested.source, name: null },
+    destination: { code: text(item.to_station_code) || requested.destination, name: null },
+    classCode: requested.classCode, quotaCode: text(item.quota) || requested.quotaCode,
     fareKnown: totalFare !== null, totalFare, breakdown,
   };
 }
@@ -131,25 +127,28 @@ function classifyAvailability(raw) {
   return 'UNKNOWN';
 }
 
-export function normalizeAvailability(data, requestedDate) {
+export function normalizeAvailability(data, requested) {
   const item = object(data);
-  const days = Array.isArray(item.avlDayList) ? item.avlDayList : [];
-  const day = days.find((entry) => object(entry).availablityDate === requestedDate);
-  const rawStatus = day ? text(object(day).availablityStatus) : null;
+  const classes = Array.isArray(item.classes) ? item.classes : [];
+  const result = classes.find((entry) => object(entry).class_code === requested.classCode);
+  const rawStatus = text(object(result).availability_text) || text(object(result).status);
   return {
-    trainNumber: text(item.trainNumber), trainName: text(item.trainName),
-    source: station(item.sourceStation), destination: station(item.destinationStation),
-    classCode: text(item.classCode), quotaCode: text(item.quotaCode),
-    requestedJourneyDate: requestedDate,
-    availabilityDate: day ? text(object(day).availablityDate) : null,
+    trainNumber: text(item.train_number) || requested.number, trainName: null,
+    source: { code: text(item.from_station_code) || requested.source, name: null },
+    destination: { code: text(item.to_station_code) || requested.destination, name: null },
+    classCode: requested.classCode, quotaCode: text(item.quota) || requested.quotaCode,
+    requestedJourneyDate: requested.journeyDateValue,
+    availabilityDate: text(item.journey_date),
     availabilityStatus: rawStatus,
     statusType: classifyAvailability(rawStatus),
   };
 }
 
-function isNamedStation(value) {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    && typeof value.code === 'string' && typeof value.name === 'string';
+function dayOffset(time, durationMinutes, journeyDay) {
+  if (Number.isFinite(journeyDay)) return Math.max(0, journeyDay - 1);
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(time || '');
+  if (!match) return null;
+  return Math.floor((Number(match[1]) * 60 + Number(match[2]) + durationMinutes) / 1440);
 }
 
 function invalidProviderData(message) {

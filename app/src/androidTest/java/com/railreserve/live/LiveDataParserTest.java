@@ -28,6 +28,12 @@ public class LiveDataParserTest {
                 () -> LiveDataParser.parseStations(new JSONObject("{\"stations\":[{\"code\":\"NDLS\"}]}")));
     }
 
+    @Test public void buildsEncodedAvailabilityRequestForSelectedTrainClassAndDate() {
+        assertEquals("/api/trains/12345/availability?source=NDLS&destination=HWH"
+                        + "&journeyDate=2026-10-25&classCode=3A&quotaCode=GN",
+                BackendRequestPaths.availability("12345", "NDLS", "HWH", "2026-10-25", "3A", "GN"));
+    }
+
     @Test public void parsesTrainOffsetsAndMissingOptionalFieldsWithoutInventingValues() throws Exception {
         JSONObject data = new JSONObject("{\"from\":{\"code\":\"NDLS\",\"name\":\"New Delhi\"},"
                 + "\"to\":{\"code\":\"HWH\",\"name\":\"Howrah\"},\"count\":1,\"trains\":["
@@ -53,6 +59,17 @@ public class LiveDataParserTest {
         assertNull(schedule.getStops().get(0).getArrival());
         assertEquals(Integer.valueOf(2), schedule.getStops().get(1).getArrivalDay());
         assertNull(schedule.getStops().get(1).getDeparture());
+    }
+
+    @Test public void parsesLiveAvailabilityStatusAndDate() throws Exception {
+        LiveAvailability availability = LiveDataParser.parseAvailability(
+                new JSONObject("{\"availabilityStatus\":\"AVAILABLE 4\",\"statusType\":\"AVAILABLE\","
+                        + "\"availabilityDate\":\"2026-10-25\"}"));
+        assertEquals("AVAILABLE 4", availability.getStatus());
+        assertEquals("AVAILABLE", availability.getStatusType());
+        assertEquals("2026-10-25", availability.getJourneyDate());
+        assertThrows(BackendException.class,
+                () -> LiveDataParser.parseAvailability(new JSONObject("{\"statusType\":\"UNKNOWN\"}")));
     }
 
     @Test public void rejectsUnexpectedEnvelopesAndMapsSanitizedBackendErrors() throws Exception {
