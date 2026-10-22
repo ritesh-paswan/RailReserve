@@ -70,10 +70,10 @@ public final class BookingAdapter extends BaseAdapter {
         status.setTextColor(confirmed ? 0xff20624e : 0xff9a3e31);
 
         Button cancelButton = view.findViewById(R.id.cancelBookingButton);
-        cancelButton.setVisibility(confirmed ? View.VISIBLE : View.GONE);
-        cancelButton.setEnabled(confirmed && !cancellationInProgress);
+        cancelButton.setVisibility(confirmed && listener != null ? View.VISIBLE : View.GONE);
+        cancelButton.setEnabled(confirmed && listener != null && !cancellationInProgress);
         cancelButton.setText(cancellationInProgress ? "Cancelling..." : "Cancel booking");
-        cancelButton.setOnClickListener(clicked -> listener.onCancel(booking));
+        cancelButton.setOnClickListener(listener == null ? null : clicked -> listener.onCancel(booking));
         return view;
     }
 }
