@@ -6,7 +6,7 @@ PROJECT OVERVIEW
 ----------------
 RailReserve is a native Android application built with Java, XML layouts,
 and SQLite. Live station and scheduled train search uses the Node.js backend
-as an adapter to the RailRadar provider. The app also contains a local demo
+as an adapter to the RailCore provider. The app also contains a local demo
 booking workflow.
 
 Demo bookings are stored locally on the device. They are not IRCTC
@@ -91,8 +91,9 @@ From PowerShell:
     Set-Location .\backend
     Copy-Item .env.example .env
 
-Set RAILRADAR_API_KEY in backend\.env using a text editor. Keep the key
-private; do not add it to the Android app or source control. Then run:
+Set RAILCORE_API_KEY in backend\.env using a text editor. The live app
+requires the stations:read, journeys:read, and schedule:read scopes. Keep
+the key private; do not add it to the Android app or source control. Then run:
 
     npm install
     npm start

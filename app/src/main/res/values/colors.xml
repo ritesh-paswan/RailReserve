@@ -11,4 +11,9 @@
     <color name="teal_soft">#E7F4F2</color>
     <color name="surface">#FFFFFFFF</color>
     <color name="surface_soft">#F3F6FA</color>
+    <color name="live_hero_start">#102A43</color>
+    <color name="live_hero_end">#0F766E</color>
+    <color name="live_accent">#D7A843</color>
+    <color name="live_accent_soft">#FBF3DF</color>
+    <color name="live_success">#237A55</color>
 </resources>

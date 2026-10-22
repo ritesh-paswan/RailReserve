@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -15,8 +18,12 @@ import com.railreserve.R;
 import com.railreserve.adapter.LiveTrainAdapter;
 import com.railreserve.live.BackendException;
 import com.railreserve.live.LiveDataRepository;
+import com.railreserve.live.LiveAvailability;
+import com.railreserve.live.LiveFare;
 import com.railreserve.live.LiveTrain;
 import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +37,9 @@ public final class LiveTrainResultsActivity extends AppCompatActivity {
     private ProgressBar progress;
     private TextView status;
     private Button retry;
+    private Spinner availabilityClass;
     private LiveTrainAdapter adapter;
+    private static final String[] AVAILABILITY_CLASSES = {"1A", "2A", "3A", "3E", "SL", "2S", "CC", "EC"};
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -47,12 +56,24 @@ public final class LiveTrainResultsActivity extends AppCompatActivity {
         destinationName = getIntent().getStringExtra(LiveSearchActivity.EXTRA_DESTINATION_NAME);
         journeyDate = getIntent().getStringExtra(LiveSearchActivity.EXTRA_DATE);
         ((TextView) findViewById(R.id.liveResultsHeading)).setText(label(sourceName, sourceCode) + "  →  " + label(destinationName, destinationCode));
-        ((TextView) findViewById(R.id.liveResultsSubtitle)).setText(value(journeyDate) + "  ·  RailRadar via RailReserve backend");
+        ((TextView) findViewById(R.id.liveResultsSubtitle)).setText(value(journeyDate) + "  ·  RailCore via RailReserve backend");
         progress = findViewById(R.id.liveResultsProgress);
         status = findViewById(R.id.liveResultsStatus);
         retry = findViewById(R.id.liveResultsRetry);
         retry.setOnClickListener(view -> loadTrains());
-        adapter = new LiveTrainAdapter(this, this::openSchedule);
+        availabilityClass = findViewById(R.id.liveAvailabilityClass);
+        ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, AVAILABILITY_CLASSES);
+        classAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        availabilityClass.setAdapter(classAdapter);
+        availabilityClass.setSelection(2);
+        adapter = new LiveTrainAdapter(this, this::openSchedule, this::checkAvailability, this::checkFare);
+        availabilityClass.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                adapter.setSelectedClass(AVAILABILITY_CLASSES[position]);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
+        });
         ((ListView) findViewById(R.id.liveResultsList)).setAdapter(adapter);
         if (!validSearch()) {
             progress.setVisibility(View.GONE);
@@ -100,6 +121,55 @@ public final class LiveTrainResultsActivity extends AppCompatActivity {
         intent.putExtra(LiveScheduleActivity.EXTRA_TRAIN_NAME, train.getName());
         intent.putExtra(LiveScheduleActivity.EXTRA_DATE, journeyDate);
         startActivity(intent);
+    }
+
+    private void checkAvailability(LiveTrain train, String classCode) {
+        if (train == null || destroyed) return;
+        adapter.setAvailabilityLoading(train.getNumber(), classCode, true);
+        executor.execute(() -> {
+            try {
+                LiveAvailability availability = repository.getAvailability(train.getNumber(), sourceCode,
+                        destinationCode, journeyDate, classCode, "GN");
+                String result = availability.getStatus();
+                if (availability.getJourneyDate() != null) result += " · " + availability.getJourneyDate();
+                String display = classCode + " · General: " + result;
+                runOnUiThread(() -> {
+                    if (destroyed) return;
+                    adapter.setAvailabilityResult(train.getNumber(), classCode, display);
+                });
+            } catch (BackendException exception) {
+                runOnUiThread(() -> {
+                    if (destroyed) return;
+                    adapter.setAvailabilityResult(train.getNumber(), classCode,
+                            classCode + " · " + (exception.getMessage() == null
+                                    ? "Could not load availability." : exception.getMessage()));
+                });
+            }
+        });
+    }
+
+    private void checkFare(LiveTrain train, String classCode) {
+        if (train == null || destroyed) return;
+        adapter.setFareLoading(train.getNumber(), classCode, true);
+        executor.execute(() -> {
+            try {
+                LiveFare fare = repository.getFare(train.getNumber(), sourceCode, destinationCode,
+                        journeyDate, classCode, "GN");
+                String result = fare.isKnown()
+                        ? classCode + " · Estimated fare: " + NumberFormat
+                                .getCurrencyInstance(new Locale("en", "IN")).format(fare.getTotal())
+                        : classCode + " · Fare not returned for this class.";
+                runOnUiThread(() -> {
+                    if (!destroyed) adapter.setFareResult(train.getNumber(), classCode, result);
+                });
+            } catch (BackendException exception) {
+                runOnUiThread(() -> {
+                    if (!destroyed) adapter.setFareResult(train.getNumber(), classCode,
+                            classCode + " · " + (exception.getMessage() == null
+                                    ? "Could not load fare." : exception.getMessage()));
+                });
+            }
+        });
     }
 
     private void showError(String message, boolean canRetry) {

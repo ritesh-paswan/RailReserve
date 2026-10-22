@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background"
-    android:elevation="1dp"
+    android:background="@drawable/live_search_card"
+    android:elevation="2dp"
     android:orientation="vertical"
     android:padding="14dp">
 
@@ -28,6 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/live_route_badge"
+        android:padding="8dp"
         android:textColor="@color/brand_dark"
         android:textSize="13sp" />
 

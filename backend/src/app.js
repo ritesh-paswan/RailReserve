@@ -2,10 +2,10 @@ import crypto from 'node:crypto';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { ApiError } from './errors.js';
-import { RailRadarClient } from './provider/railRadarClient.js';
+import { RailCoreClient } from './provider/railCoreClient.js';
 import { createApiRouter } from './routes/api.js';
 
-export function createApp({ client = new RailRadarClient(), rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 60),
+export function createApp({ client = new RailCoreClient(), rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 60),
   rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 900000) } = {}) {
   const app = express();
   app.disable('x-powered-by');

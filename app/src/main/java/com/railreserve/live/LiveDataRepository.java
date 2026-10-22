@@ -30,6 +30,18 @@ public final class LiveDataRepository {
         return LiveDataParser.parseTrains(api.trainsBetween(from, to, date));
     }
 
+    public LiveFare getFare(String trainNumber, String from, String to, String date,
+                            String classCode, String quotaCode) throws BackendException {
+        return LiveDataParser.parseFare(
+                api.fare(trainNumber, from, to, date, classCode, quotaCode));
+    }
+
+    public LiveAvailability getAvailability(String trainNumber, String from, String to, String date,
+                                            String classCode, String quotaCode) throws BackendException {
+        return LiveDataParser.parseAvailability(
+                api.availability(trainNumber, from, to, date, classCode, quotaCode));
+    }
+
     public synchronized LiveSchedule getSchedule(String trainNumber) throws BackendException {
         if (scheduleCache.containsKey(trainNumber)) return scheduleCache.get(trainNumber);
         LiveSchedule schedule = LiveDataParser.parseSchedule(api.schedule(trainNumber));

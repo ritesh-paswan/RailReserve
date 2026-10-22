@@ -1,8 +1,8 @@
 import { createApp } from './app.js';
-import { RailRadarClient } from './provider/railRadarClient.js';
+import { RailCoreClient } from './provider/railCoreClient.js';
 
-if (!process.env.RAILRADAR_API_KEY?.trim()) {
-  process.stderr.write('RAILRADAR_API_KEY is required to start the RailReserve backend.\n');
+if (!process.env.RAILCORE_API_KEY?.trim()) {
+  process.stderr.write('RAILCORE_API_KEY is required to start the RailReserve backend.\n');
   process.exitCode = 1;
 } else {
   const port = Number(process.env.PORT || 3000);
@@ -10,7 +10,7 @@ if (!process.env.RAILRADAR_API_KEY?.trim()) {
     process.stderr.write('PORT must be a valid TCP port.\n');
     process.exitCode = 1;
   } else {
-    const app = createApp({ client: new RailRadarClient() });
+    const app = createApp({ client: new RailCoreClient() });
     app.listen(port, '0.0.0.0', () => process.stdout.write(`RailReserve backend listening on port ${port}.\n`));
   }
 }
